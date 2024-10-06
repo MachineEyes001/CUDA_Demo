@@ -1,6 +1,9 @@
 #include "include/CudaDemo.h"
 
+#include <iostream>
+
 #define NUM_REPAETS 10
+#define CUDA_CHECK(error) ErrorCheck(error, __FILE__, __LINE__)
 
 CudaDemo::CudaDemo(/* args */)
 {
@@ -530,4 +533,22 @@ void CudaDemo::Grid2d_bLOCK2D(){
     ErrorCheck(cudaFree(ipDevice_C), __FILE__, __LINE__); 
 
     ErrorCheck(cudaDeviceReset(), __FILE__, __LINE__); 
+}
+
+void CudaDemo::GPU_Indicator_Query(int device_id){
+    cudaDeviceProp deviceProps;
+    CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, device_id));
+    std::cout << "运行GPU设备:" << deviceProps.name << std::endl;
+    std::cout << "SM数量：" << deviceProps.multiProcessorCount << std::endl;
+    std::cout << "L2缓存大小：" << deviceProps.l2CacheSize / (1024 * 1024) << "M" << std::endl;
+    std::cout << "SM最大驻留线程数量：" << deviceProps.maxThreadsPerMultiProcessor << std::endl;
+    std::cout << "设备是否支持流优先级：" << deviceProps.streamPrioritiesSupported << std::endl;
+    std::cout << "设备是否支持在L1缓存中缓存全局内存：" << deviceProps.globalL1CacheSupported << std::endl;
+    std::cout << "设备是否支持在L1缓存中缓存本地内存：" << deviceProps.localL1CacheSupported << std::endl;
+    std::cout << "一个SM可用的最大共享内存量：" << deviceProps.sharedMemPerMultiprocessor / 1024  << "KB" << std::endl;
+    std::cout << "一个SM可用的32位最大寄存器数量：" << deviceProps.regsPerMultiprocessor / 1024 << "K" << std::endl;
+    std::cout << "一个SM最大驻留线程块数量：" << deviceProps.maxBlocksPerMultiProcessor << std::endl;
+    std::cout << "GPU内存带宽：" << deviceProps.memoryBusWidth << std::endl;
+    std::cout << "GPU内存频率：" << (float)deviceProps.memoryClockRate / (1024 * 1024) << "GHz" << std::endl;
+    CUDA_CHECK(cudaDeviceReset());
 }
